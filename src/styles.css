@@ -252,7 +252,7 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 @media (max-width: 1280px) { .day-planner { grid-template-columns: minmax(0, 1fr) 290px; } .day-workload { grid-template-columns: repeat(3, 1fr); } .day-workload p { grid-column: 1 / -1; min-height: 42px; } }
 
 /* Week planner: airy multi-day schedule inspired by the reference grid. */
-.timeline-grid { grid-template-columns: 64px repeat(7, minmax(340px, 1fr)); gap: 0; padding: 0; border: 0; border-radius: 0; background: transparent; overflow-x: auto; overflow-y: hidden; }
+.timeline-grid { grid-template-columns: 64px repeat(7, minmax(420px, 1fr)); gap: 0; padding: 0; border: 0; border-radius: 0; background: transparent; overflow-x: auto; overflow-y: hidden; }
 .timeline-axis, .timeline-column { min-width: 0; }
 .timeline-axis-head, .timeline-column > header { height: 176px; }
 .timeline-axis-head { border-bottom: 1px solid #dedfd9; }
