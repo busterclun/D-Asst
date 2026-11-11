@@ -199,4 +199,24 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .field-label select[multiple] option:checked { background: #465c47 linear-gradient(0deg, #465c47, #465c47); color: #fff; }
 .field-label select[multiple] option:hover { background: #e9f0e9; color: #2e2621; }
 .timeline-column > header small { display: block; margin-top: 3px; color: #879388; font: 11px 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }
+.date-time-field { position: relative; }
+.date-time-input { display: flex; align-items: center; margin-top: 7px; border: 1px solid var(--line-soft); border-radius: 9px; background: var(--surface-soft); overflow: hidden; }
+.date-time-input input { flex: 1; width: auto; margin-top: 0 !important; border: 0 !important; background: transparent !important; cursor: pointer; }
+.date-time-input button { width: 38px; height: 38px; background: transparent; color: #465c47; font-size: 15px; }
+.date-time-input:focus-within { border-color: #8ea991; box-shadow: 0 0 0 3px #465c4718; }
+.date-time-popover { position: absolute; top: calc(100% + 6px); left: 0; z-index: 12; width: 282px; padding: 12px; border: 1px solid #d9e3d9; border-radius: 12px; background: #fffefa; box-shadow: 0 16px 35px #2e26212b; }
+.date-time-head, .date-time-foot, .date-time-controls { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+.date-time-head { color: #465c47; font-size: 12px; }
+.date-time-head button, .date-time-foot button { padding: 5px 8px; border-radius: 6px; background: transparent; color: #465c47; }
+.date-time-head button:hover, .date-time-foot button:hover { background: #e9f0e9; }
+.date-time-week, .date-time-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 9px; text-align: center; }
+.date-time-week { color: #8a988c; font-size: 10px; }
+.date-time-days button { height: 28px; border-radius: 6px; background: transparent; color: #354236; font-size: 11px; }
+.date-time-days button:hover { background: #e9f0e9; }
+.date-time-days button.muted { color: #b7c1b8; }
+.date-time-days button.selected { background: #465c47; color: #fff; box-shadow: 0 3px 8px #465c4726; }
+.date-time-controls { margin-top: 11px; padding-top: 10px; border-top: 1px solid #edf0eb; }
+.date-time-controls select { flex: 1; border: 1px solid #d9e3d9; border-radius: 7px; padding: 7px; background: #fbfcf9; color: #465c47; font-size: 11px; accent-color: #465c47; }
+.date-time-controls option:checked { background: #465c47 linear-gradient(0deg, #465c47, #465c47); color: #fff; }
+.date-time-foot { justify-content: flex-end; margin-top: 10px; }
 @media (max-width: 1280px) { .day-planner { grid-template-columns: minmax(0, 1fr) 290px; } .day-workload { grid-template-columns: repeat(3, 1fr); } .day-workload p { grid-column: 1 / -1; min-height: 42px; } }
