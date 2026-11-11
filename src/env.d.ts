@@ -9,6 +9,7 @@ declare global {
       setCloseBehavior: (value: string) => void
       respondClose: (action: string) => void
       onCloseRequest: (handler: () => void) => () => void
+      onNavigate: (handler: (view: string) => void) => () => void
     }
   }
 }

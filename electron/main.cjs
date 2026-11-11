@@ -6,6 +6,7 @@ let mainWindow
 let tray
 let closeBehavior = 'ask'
 const dataPath = () => path.join(app.getPath('userData'), 'd-asst-data.json')
+const windowStatePath = () => path.join(app.getPath('userData'), 'window-state.json')
 
 const initialData = {
   tasks: [],
@@ -28,7 +29,13 @@ function readData() {
 
 function writeData(data) {
   fs.mkdirSync(path.dirname(dataPath()), { recursive: true })
-  fs.writeFileSync(dataPath(), JSON.stringify(data, null, 2), 'utf8')
+  const target = dataPath()
+  const temp = `${target}.tmp`
+  const backup = `${target}.bak`
+  const payload = JSON.stringify(data, null, 2)
+  fs.writeFileSync(temp, payload, 'utf8')
+  if (fs.existsSync(target)) fs.copyFileSync(target, backup)
+  fs.renameSync(temp, target)
 }
 
 function showWindow() {
@@ -37,12 +44,27 @@ function showWindow() {
   mainWindow.focus()
 }
 
+function readWindowState() {
+  try { return JSON.parse(fs.readFileSync(windowStatePath(), 'utf8')) } catch { return { width: 1440, height: 900 } }
+}
+
+function saveWindowState() {
+  if (!mainWindow || mainWindow.isDestroyed() || mainWindow.isMinimized()) return
+  const state = { ...mainWindow.getBounds(), isMaximized: mainWindow.isMaximized() }
+  fs.mkdirSync(path.dirname(windowStatePath()), { recursive: true })
+  fs.writeFileSync(windowStatePath(), JSON.stringify(state), 'utf8')
+}
+
 function createTray() {
   const icon = nativeImage.createEmpty()
   tray = new Tray(icon)
   tray.setToolTip('D-Asst')
+  const tasks = readData()?.tasks || []
+  const today = tasks.filter(t => t.status !== 'done' && t.startAt && new Date(t.startAt).toDateString() === new Date().toDateString()).slice(0, 5)
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: '显示 D-Asst', click: showWindow },
+    { label: `今日待办（${today.length}）`, enabled: today.length > 0, click: showWindow },
+    { label: '打开设置', click: () => { showWindow(); mainWindow?.webContents.send('navigate', 'settings') } },
     { type: 'separator' },
     { label: '退出', click: () => { closeBehavior = 'quit'; app.quit() } }
   ]))
@@ -50,9 +72,12 @@ function createTray() {
 }
 
 function createWindow() {
+  const state = readWindowState()
   mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 900,
+    width: state.width || 1440,
+    height: state.height || 900,
+    x: Number.isFinite(state.x) ? state.x : undefined,
+    y: Number.isFinite(state.y) ? state.y : undefined,
     minWidth: 1080,
     minHeight: 700,
     backgroundColor: '#faf9f6',
@@ -64,6 +89,11 @@ function createWindow() {
     event.preventDefault()
     mainWindow.webContents.send('close-request')
   })
+  mainWindow.on('resize', saveWindowState)
+  mainWindow.on('move', saveWindowState)
+  mainWindow.on('maximize', saveWindowState)
+  mainWindow.on('unmaximize', saveWindowState)
+  if (state.isMaximized) mainWindow.maximize()
   if (process.env.D_ASST_DEV) mainWindow.loadURL('http://127.0.0.1:5173')
   else mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
 }

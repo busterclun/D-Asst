@@ -30,4 +30,10 @@ export interface Settings {
   timezone: string
 }
 
-export interface AppData { tasks: Task[]; categories: Category[]; settings: Settings }
+export interface AppData {
+  tasks: Task[]
+  categories: Category[]
+  settings: Settings
+  /** Idempotency ledger for reminder instances; optional for V1.0 data compatibility. */
+  notificationLog?: Record<string, string>
+}

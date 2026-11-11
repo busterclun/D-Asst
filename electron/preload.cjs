@@ -6,6 +6,11 @@ contextBridge.exposeInMainWorld('dAsst', {
   notify: (payload) => ipcRenderer.send('notification:show', payload),
   setCloseBehavior: (value) => ipcRenderer.send('window:set-close-behavior', value),
   respondClose: (action) => ipcRenderer.send('window:close-response', action),
+  onNavigate: (handler) => {
+    const listener = (_event, view) => handler(view)
+    ipcRenderer.on('navigate', listener)
+    return () => ipcRenderer.removeListener('navigate', listener)
+  },
   onCloseRequest: (handler) => {
     const listener = () => handler()
     ipcRenderer.on('close-request', listener)

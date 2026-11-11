@@ -11,6 +11,7 @@ export const seedData: AppData = {
     { id: 'exercise', name: '锻炼', color: '#5b8c88' }
   ],
   settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai' },
+  notificationLog: {},
   tasks: []
 }
 
