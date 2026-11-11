@@ -7,7 +7,12 @@ const minutesBetween = (start: string, end: string) => Math.max(0, Math.round((n
 export function taskBlocks(task: Task): TimeBlock[] {
   if (Array.isArray(task.scheduleBlocks)) return task.scheduleBlocks.filter(block => block.taskId === task.id && block.startAt && block.endAt)
   if (!task.startAt) return []
-  const end = task.dueAt || new Date(new Date(task.startAt).getTime() + (task.estimatedDuration || DEFAULT_TASK_DURATION) * 60000).toISOString()
+  const dueDuration = task.dueAt ? minutesBetween(task.startAt, task.dueAt) : 0
+  // V1.0 used `dueAt` both as an end time and as a deadline. Treat multi-day
+  // legacy ranges as deadlines so they do not become accidental 30-hour blocks.
+  const end = task.dueAt && dueDuration <= 24 * 60
+    ? task.dueAt
+    : new Date(new Date(task.startAt).getTime() + (task.estimatedDuration || DEFAULT_TASK_DURATION) * 60000).toISOString()
   return [{ id: `legacy-${task.id}`, taskId: task.id, startAt: task.startAt, endAt: end }]
 }
 
