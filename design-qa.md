@@ -1,21 +1,41 @@
-# D-Asst UI Design QA
+# Weekly Planner Design QA
 
-## Final result: blocked
+**Source visual truth**
 
-本轮实现已完成代码级验证，但无法完成真实窗口视觉验收：Codex 当前桌面自动化接口返回 `nodeRepl.fetch request failed`，无法稳定抓取 Electron 窗口截图并执行点击交互。
+- `C:/Temp/codex-clipboard-8a8b8ba7-165e-448f-a92a-7661b8e86e56.png`
+- Reference state: desktop weekly planner, three visible day columns, 30-minute labels, large date hierarchy, outlined add buttons, current day coral marker.
 
-## Implemented changes
+**Implementation evidence**
 
-- 已完成任务使用实心圆形标记，不再显示打钩。
-- 工作台日期使用当前系统日期；“下一个提醒”从未完成、未取消且尚未开始的任务中按开始时间实时计算。
-- AI 助手改为居中的对话式输入框，保留解析、预览编辑、分类选择和确认导入。
+- Rendered implementation screenshot: unavailable.
+- The portable Electron build started successfully, but the available Windows UI capture bridge returned no target application window, so a same-viewport screenshot could not be captured.
 
-## Automated checks
+**Viewport and state**
 
-- `npm run typecheck`：passed
-- `npm run build`：passed
-- 便携版已重新覆盖并启动：passed
+- Intended viewport: desktop app window matching the supplied reference.
+- Intended state: `我的一周`, current week, timeline visible, current day highlighted.
+- Pixel/density normalization: not performed because implementation capture was blocked.
 
-## Manual follow-up
+**Findings**
 
-在本机窗口中打开“工作台”和“AI 助手”，确认完成标记、下一个提醒刷新、输入框解析和预览导入的视觉与交互细节；如需继续打磨，可再根据实际截图调整间距和颜色。
+- [P2] Visual comparison is blocked. The weekly planner implementation has been updated to use a spacious multi-column timeline, large stacked day/date headers, workload subtitles, 30-minute labels, and outlined add buttons while retaining 15-minute drag snapping. A rendered screenshot is still required to verify exact spacing, clipping, and responsive behavior against the supplied image.
+
+**Focused region comparison**
+
+- Not available; implementation capture was blocked before comparison.
+
+**Comparison history**
+
+- Initial implementation: existing compact seven-column card layout.
+- Fix applied: widened timeline columns, changed the header hierarchy, added workload text and current-day marker, moved the timeline start to 08:00, and enlarged the grid rhythm.
+- Post-fix evidence: build and portable startup passed; visual screenshot capture remains blocked.
+
+**Implementation checklist**
+
+- [x] Weekly header hierarchy updated.
+- [x] 30-minute labels displayed while preserving 15-minute drop snapping.
+- [x] Outlined add button placed at the upper-right of each day header.
+- [x] Workload subtitle shows `暂无安排` or `已安排 …`.
+- [ ] Capture and compare the rendered implementation at the reference viewport.
+
+**Final result: blocked**
