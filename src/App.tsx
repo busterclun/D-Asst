@@ -41,6 +41,7 @@ function App() {
   const [history, setHistory] = useState<AppData[]>([])
   const [future, setFuture] = useState<AppData[]>([])
   const [themePulse, setThemePulse] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => { loadData().then(setData) }, [])
   useEffect(() => { if (data) saveData(data) }, [data])
@@ -171,12 +172,12 @@ function App() {
   const handleContextMenu = (event: ReactMouseEvent<HTMLDivElement>) => { const target = event.target as HTMLElement; const id = target.closest<HTMLElement>('[data-task-id]')?.dataset.taskId; if (!id) return; event.preventDefault(); setContextMenu({ taskId: id, x: Math.min(event.clientX, window.innerWidth - 210), y: Math.min(event.clientY, window.innerHeight - 180) }); if (!selectedIds.includes(id)) setSelectedIds([id]) }
 
   const contextTask = contextMenu ? data.tasks.find(t => t.id === contextMenu.taskId) : undefined
-  return <div className={`app theme-${data.settings.theme === 'system' ? 'light' : data.settings.theme}`} onClickCapture={handleTaskClickCapture} onContextMenu={handleContextMenu} onClick={() => { if (contextMenu) setContextMenu(null) }}>
-    <aside className="sidebar">
-      <div className="brand"><div className="brand-mark">D</div><div><strong>D-Asst</strong><span>让计划自然发生</span></div></div>
-      <button className="quick-add" onClick={() => setModal({ date: selectedDate })}><span>＋</span>快速添加任务 <kbd>Ctrl N</kbd></button>
-      <nav>{nav.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} onClick={() => setView(item.id)}><i>{item.icon}</i>{item.label}</button>)}</nav>
-      <div className="sidebar-bottom"><button onClick={() => setView('settings')} className={view === 'settings' ? 'active' : ''}><i>⚙</i>设置</button><div className="watermark">D-Asst · DESIGN PREVIEW</div></div>
+  return <div className={`app theme-${data.settings.theme === 'system' ? 'light' : data.settings.theme} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} onClickCapture={handleTaskClickCapture} onContextMenu={handleContextMenu} onClick={() => { if (contextMenu) setContextMenu(null) }}>
+    <aside className={`sidebar ${sidebarCollapsed ? 'is-collapsed' : ''}`}>
+      <div className="sidebar-head"><div className="brand"><div className="brand-mark">D</div><div className="brand-copy"><strong>D-Asst</strong><span>让计划自然发生</span></div></div><button className="sidebar-toggle" onClick={() => setSidebarCollapsed(value => !value)} title={sidebarCollapsed ? '展开侧边栏' : '收缩侧边栏'} aria-label={sidebarCollapsed ? '展开侧边栏' : '收缩侧边栏'}>{sidebarCollapsed ? '›' : '‹'}</button></div>
+      <button className="quick-add" onClick={() => setModal({ date: selectedDate })} title="快速添加任务"><span>＋</span><b>快速添加任务</b><kbd>Ctrl N</kbd></button>
+      <nav>{nav.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} onClick={() => setView(item.id)} title={item.label}><i>{item.icon}</i><span className="nav-label">{item.label}</span></button>)}</nav>
+      <div className="sidebar-bottom"><button onClick={() => setView('settings')} className={view === 'settings' ? 'active' : ''} title="设置"><i>⚙</i><span className="nav-label">设置</span></button><div className="watermark">D-Asst · DESIGN PREVIEW</div></div>
     </aside>
     <main className="main">
       <header className="topbar"><div><span className="eyebrow">{view === 'dashboard' ? '今天' : nav.find(n => n.id === view)?.label || '设置'}</span><span className="title-english">{viewEnglish[view]}</span><h1>{viewTitle(view, selectedDate)}</h1></div><div className="top-actions"><label className="search"><span>⌕</span><input placeholder="搜索任务" value={search} onChange={e => setSearch(e.target.value)} /></label><button className={`icon-button ${themePulse ? 'feedback' : ''}`} onClick={toggleTheme} title={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-label={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-pressed={data.settings.theme === 'dark'}>◐</button><button className="avatar profile-button" onClick={() => setView(view === 'settings' ? 'dashboard' : 'settings')} title={view === 'settings' ? '返回工作台' : '打开偏好设置'} aria-label={view === 'settings' ? '返回工作台' : '打开偏好设置'}><span>我</span><i>⌄</i></button></div></header>
