@@ -1,0 +1,67 @@
+{
+  "file": {
+    "name": "D-Asst Design System",
+    "fileKey": "Y4l8pmCw35ikjE1OcR87yx",
+    "url": "https://www.figma.com/design/Y4l8pmCw35ikjE1OcR87yx",
+    "sessionId": "b1cba820-b7d6-4a9b-beec-62c9de6dffd8",
+    "plan": "Starter"
+  },
+  "pages": {
+    "library": "0:1",
+    "productDesign": "1:4",
+    "landingAndHandoff": "1:5"
+  },
+  "sections": {
+    "foundations": "3:2",
+    "designTokens": "3:22",
+    "components": "4:2"
+  },
+  "variableCollections": {
+    "spacing": "VariableCollectionId:2:2",
+    "radius": "VariableCollectionId:2:3",
+    "coreColors": "VariableCollectionId:2:4",
+    "colorSystemLight": "VariableCollectionId:2:5",
+    "colorSystemDarkFallback": "VariableCollectionId:2:6"
+  },
+  "componentSets": {
+    "button": "4:165",
+    "iconButton": "4:166",
+    "input": "9:59",
+    "checkbox": "9:60",
+    "switch": "9:61"
+  },
+  "components": {
+    "search": "7:102",
+    "dropdown": "7:108",
+    "datePicker": "7:113",
+    "timePicker": "7:119",
+    "timeRangeSelector": "7:125",
+    "categoryBadge": "7:129",
+    "priorityBadge": "7:131",
+    "taskListItem": "7:133",
+    "taskCard": "7:138",
+    "calendarCell": "7:142",
+    "weekColumn": "7:146",
+    "monthGrid": "7:154",
+    "modal": "8:57",
+    "toast": "8:62",
+    "progressRing": "8:67",
+    "navigationSidebar": "8:70",
+    "reminderCard": "8:86"
+  },
+  "icons": {
+    "plus": "4:8",
+    "check": "4:11",
+    "search": "4:15",
+    "calendar": "4:19",
+    "clock": "4:23",
+    "chevronDown": "4:26",
+    "sparkle": "4:29",
+    "menu": "4:32"
+  },
+  "constraints": {
+    "pageLimit": 3,
+    "nativeColorModesAvailable": false,
+    "currentBlocker": "Figma MCP Starter tool-call limit reached before application-screen creation"
+  }
+}

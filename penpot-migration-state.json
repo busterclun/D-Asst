@@ -1,0 +1,32 @@
+{
+  "product": "D-Asst",
+  "source": {
+    "platform": "Figma",
+    "fileName": "D-Asst Design System",
+    "fileKey": "Y4l8pmCw35ikjE1OcR87yx",
+    "url": "https://www.figma.com/design/Y4l8pmCw35ikjE1OcR87yx",
+    "preserveAsBackup": true
+  },
+  "target": {
+    "platform": "Penpot",
+    "projectName": "D-Asst",
+    "fileName": "D-Asst Design System",
+    "status": "updated-package-ready",
+    "exportFile": "C:\\Users\\QIUDONG\\Desktop\\D-Asst Design System.penpot",
+    "workspaceCopy": "C:\\Users\\QIUDONG\\Documents\\ChatGPT\\提醒工具\\D-Asst Design System.penpot",
+    "validationReport": "PENPOT_EXPORT_VALIDATION.md",
+    "userConfirmedImported": true,
+    "cloudFileUrl": "https://design.penpot.app/?screen=workspace&team-id=17092c62-56e2-8122-8008-ecdc9faac3c9&file-id=d2ec9836-375a-810a-8008-ece30a77ed5b&page-id=3ae82a3c-f269-803b-8008-ecddfe59796e",
+    "updatedPackage": "C:\\Users\\QIUDONG\\Desktop\\D-Asst Design System - Updated.penpot"
+  },
+  "exporter": {
+    "repository": "https://github.com/penpot/penpot-exporter-figma-plugin",
+    "version": "0.26.3",
+    "manifest": "C:\\Users\\QIUDONG\\Documents\\ChatGPT\\提醒工具\\tools\\penpot-exporter-figma-plugin\\manifest.json",
+    "built": true
+  },
+  "handoff": {
+    "instructions": "PENPOT_MIGRATION.md",
+    "nextStep": "Run Penpot Exporter in Figma Desktop with All pages selected, then import the downloaded file into Penpot."
+  }
+}

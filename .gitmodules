@@ -1,0 +1,3 @@
+[submodule "tools/penpot-exporter-figma-plugin"]
+	path = tools/penpot-exporter-figma-plugin
+	url = https://github.com/penpot/penpot-exporter-figma-plugin.git
