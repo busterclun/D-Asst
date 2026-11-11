@@ -11,6 +11,10 @@ contextBridge.exposeInMainWorld('dAsst', {
     ipcRenderer.on('navigate', listener)
     return () => ipcRenderer.removeListener('navigate', listener)
   },
+  aiConfigLoad: () => ipcRenderer.invoke('ai:config:load'),
+  aiConfigSave: (config) => ipcRenderer.invoke('ai:config:save', config),
+  aiTest: () => ipcRenderer.invoke('ai:test'),
+  aiParse: (payload) => ipcRenderer.invoke('ai:parse', payload),
   onCloseRequest: (handler) => {
     const listener = () => handler()
     ipcRenderer.on('close-request', listener)

@@ -51,6 +51,26 @@ export interface Settings {
   dailyCapacityMinutes?: number
 }
 
+export interface AIConfigPublic {
+  providerName: string
+  baseUrl: string
+  model: string
+  timeoutMs: number
+  maxTokens: number
+  temperature: number
+  configured: boolean
+}
+
+export interface AIConfigInput {
+  providerName: string
+  baseUrl: string
+  apiKey: string
+  model: string
+  timeoutMs: number
+  maxTokens: number
+  temperature: number
+}
+
 export interface AppData {
   tasks: Task[]
   categories: Category[]

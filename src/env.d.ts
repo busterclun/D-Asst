@@ -10,6 +10,10 @@ declare global {
       respondClose: (action: string) => void
       onCloseRequest: (handler: () => void) => () => void
       onNavigate: (handler: (view: string) => void) => () => void
+      aiConfigLoad: () => Promise<import('./types').AIConfigPublic>
+      aiConfigSave: (config: import('./types').AIConfigInput) => Promise<import('./types').AIConfigPublic>
+      aiTest: () => Promise<{ ok: boolean; message: string }>
+      aiParse: (payload: { text: string; context: unknown }) => Promise<unknown>
     }
   }
 }
