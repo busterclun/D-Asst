@@ -302,6 +302,9 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .week-mode-switch { display: inline-flex; margin-left: 4px; padding: 3px; border: 1px solid #d9e1d8; border-radius: 10px; background: #f0f3ee; }
 .week-mode-switch button { padding: 7px 10px; border-radius: 7px; background: transparent; color: #718074; font-size: 11px; transition: background var(--motion-fast) ease, color var(--motion-fast) ease, box-shadow var(--motion-fast) ease; }
 .week-mode-switch button.active { background: #465c47; color: #fff; box-shadow: 0 3px 8px #465c4726; }
+.timeline-grid { transition: opacity 220ms ease, transform 260ms cubic-bezier(.22,.8,.28,1), filter 260ms ease; }
+.timeline-grid.mode-switching { opacity: .42; transform: scale(.975); filter: saturate(.82); }
+.timeline-grid.mode-switching .timeline-column { z-index: 8; margin-inline: -4px; border-radius: 16px; box-shadow: 0 16px 30px #465c4730; transform: translateY(-8px) scale(1.01); }
 .timeline-column > header { cursor: pointer; transition: background var(--motion-fast) ease; }
 .timeline-column > header:hover { background: #f4f7f2; }
 .week-focus .timeline-column.distance-1 { opacity: .84; }
