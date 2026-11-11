@@ -16,6 +16,13 @@ test('日期级安排保留日期、预计工时和截止时间，不生成时�
   assert.equal(item.dueAt, '2026-11-14T18:00:00.000Z')
 })
 
+test('旧版重复任务迁移后只保留同一条重复任务', () => {
+  const base = task({ title: '健身', categoryId: 'exercise', recurrenceRule: 'daily', important: true, estimatedDuration: 60, startAt: '2026-11-11T07:00:00.000Z', endAt: '2026-11-11T08:00:00.000Z', datePlans: [{ date: '2026-11-11' }] })
+  const legacyClone = { ...base, id: 'task-2', startAt: '2026-11-12T07:00:00.000Z', dueAt: '2026-11-12T07:00:00.000Z', createdAt: '2026-11-11T13:20:41.000Z' }
+  const normalized = scheduling.normalizeData({ tasks: [base, legacyClone], categories: [], settings: {}, notificationLog: {} })
+  assert.deepEqual(normalized.tasks.map(item => item.id), ['task-1'])
+})
+
 test('精确时间块覆盖同日日期级工时，不能重复计算', () => {
   const item = task({ estimatedDuration: 180, datePlans: [{ date: '2026-11-11' }], scheduleBlocks: [{ id: 'block-1', taskId: 'task-1', startAt: '2026-11-11T14:00:00.000Z', endAt: '2026-11-11T17:00:00.000Z' }] })
   assert.equal(scheduling.plannedMinutesForDate(item, '2026-11-11'), 180)
