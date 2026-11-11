@@ -195,5 +195,8 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .setting-number input { width: 64px; border: 1px solid #e2e7e1; border-radius: 7px; padding: 7px 8px; background: #fff; color: #526254; font: 11px 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }
 .field-help { align-self: end; color: #879388; font-size: 11px; line-height: 1.6; padding: 8px 0; }
 .field-label select[multiple] { min-height: 92px; }
+.field-label select[multiple] { accent-color: #465c47; }
+.field-label select[multiple] option:checked { background: #465c47 linear-gradient(0deg, #465c47, #465c47); color: #fff; }
+.field-label select[multiple] option:hover { background: #e9f0e9; color: #2e2621; }
 .timeline-column > header small { display: block; margin-top: 3px; color: #879388; font: 11px 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }
 @media (max-width: 1280px) { .day-planner { grid-template-columns: minmax(0, 1fr) 290px; } .day-workload { grid-template-columns: repeat(3, 1fr); } .day-workload p { grid-column: 1 / -1; min-height: 42px; } }
