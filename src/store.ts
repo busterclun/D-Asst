@@ -1,4 +1,5 @@
 import type { AppData, Category, Task } from './types'
+import { normalizeData } from './scheduling'
 
 const key = 'd-asst-data'
 const now = new Date().toISOString()
@@ -10,7 +11,7 @@ export const seedData: AppData = {
     { id: 'life', name: '生活', color: '#d98980' },
     { id: 'exercise', name: '锻炼', color: '#5b8c88' }
   ],
-  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai' },
+  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai', defaultTaskDuration: 30 },
   notificationLog: {},
   tasks: []
 }
@@ -40,7 +41,7 @@ seedData.tasks = seedTasks()
 export async function loadData(): Promise<AppData> {
   try {
     const remote = await window.dAsst?.load()
-    if (remote && typeof remote === 'object') return remote as AppData
+    if (remote && typeof remote === 'object') return normalizeData(remote as AppData)
   } catch { /* browser fallback */ }
   try {
     const local = localStorage.getItem(key)
@@ -50,7 +51,7 @@ export async function loadData(): Promise<AppData> {
         localStorage.setItem(`${key}-seeded`, '1')
         return structuredClone(seedData)
       }
-      return parsed
+      return normalizeData(parsed)
     }
   } catch { /* ignore */ }
   localStorage.setItem(`${key}-seeded`, '1')
@@ -58,8 +59,9 @@ export async function loadData(): Promise<AppData> {
 }
 
 export async function saveData(data: AppData) {
-  try { localStorage.setItem(key, JSON.stringify(data)) } catch { /* ignore */ }
-  try { await window.dAsst?.save(data) } catch { /* browser fallback */ }
+  const normalized = normalizeData(data)
+  try { localStorage.setItem(key, JSON.stringify(normalized)) } catch { /* ignore */ }
+  try { await window.dAsst?.save(normalized) } catch { /* browser fallback */ }
 }
 
 export const makeTask = (partial: Partial<Task> & Pick<Task, 'title'>): Task => ({

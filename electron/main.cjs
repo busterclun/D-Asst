@@ -16,7 +16,7 @@ const initialData = {
     { id: 'life', name: '生活', color: '#d98980' },
     { id: 'exercise', name: '锻炼', color: '#5b8c88' }
   ],
-  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai' },
+  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai', defaultTaskDuration: 30 },
   notificationLog: {}
 }
 

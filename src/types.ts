@@ -2,6 +2,12 @@ export type ViewId = 'dashboard' | 'quadrants' | 'list' | 'day' | 'week' | 'mont
 export type TaskStatus = 'todo' | 'doing' | 'done' | 'cancelled'
 
 export interface Category { id: string; name: string; color: string }
+export interface TimeBlock {
+  id: string
+  taskId: string
+  startAt: string
+  endAt: string
+}
 export interface Task {
   id: string
   title: string
@@ -17,9 +23,11 @@ export interface Task {
   endAt?: string
   dueAt?: string
   estimatedDuration?: number
+  scheduleBlocks?: TimeBlock[]
   reminderMinutes?: number
   recurrenceRule?: string
   parentTaskId?: string
+  dependencyIds?: string[]
   source: 'manual' | 'ai' | 'seed'
 }
 
@@ -28,6 +36,7 @@ export interface Settings {
   closeBehavior: 'ask' | 'tray' | 'quit'
   notifications: boolean
   timezone: string
+  defaultTaskDuration: number
 }
 
 export interface AppData {
