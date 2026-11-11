@@ -182,7 +182,7 @@ function AIImport({ categories, onImport }: { categories: Category[]; onImport: 
   return <div className="ai-chat-layout">
     <section className="ai-chat-empty">
       <span className="ai-spark">✦</span>
-      <h2>你好，先把想法说给 D-Asst</h2>
+      <h2>STAY WITH ME</h2>
       <p>描述你要完成的事情，我会先整理成可执行任务，再由你确认后写入本地。</p>
     </section>
     <section className="ai-composer">

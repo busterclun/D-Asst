@@ -124,7 +124,7 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .ai-chat-layout { min-height: calc(100vh - 180px); max-width: 900px; margin: 0 auto; padding: 38px 0 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
 .ai-chat-empty { text-align: center; max-width: 620px; }
 .ai-chat-empty .ai-spark { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 14px; background: #f8d4cf; color: #b86f68; font-size: 20px; box-shadow: 0 8px 20px #b86f6822; }
-.ai-chat-empty h2 { margin-top: 16px; font-size: 28px; letter-spacing: -.06em; }
+.ai-chat-empty h2 { margin-top: 16px; font-size: 28px; letter-spacing: .08em; font-family: 'Times New Roman', Times, serif; }
 .ai-chat-empty p { margin-top: 9px; color: #89938a; font-size: 12px; line-height: 1.8; }
 .ai-composer { width: min(760px, 100%); padding: 17px 18px 13px; border: 1px solid #dfe4dd; border-radius: 20px; background: #fff; box-shadow: 0 16px 44px #465c4714, 0 2px 5px #465c4708; }
 .ai-composer-label { display: block; margin: 0 2px 8px; color: #6d7c70; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
