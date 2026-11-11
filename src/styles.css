@@ -296,9 +296,6 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 
 /* Week planner overview controls. */
 .week-planner-toolbar { flex-wrap: wrap; }
-.week-toolbar-divider { width: 1px; height: 22px; background: #e0e4de; margin: 0 2px; }
-.week-day-shift { width: 28px; height: 28px; border: 1px solid #d9e1d8; border-radius: 8px; background: #fffefa; color: #526254; font-size: 20px; line-height: 1; transition: background var(--motion-fast) ease, transform var(--motion-fast) ease; }
-.week-day-shift:hover { background: #e9f0e9; transform: translateY(-1px); }
 .timeline-column > header { cursor: pointer; transition: background var(--motion-fast) ease; }
 .timeline-column > header:hover { background: #f4f7f2; }
 .week-overview { grid-template-columns: 42px repeat(7, minmax(0, 1fr)); overflow-x: hidden; }
