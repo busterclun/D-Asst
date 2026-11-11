@@ -250,3 +250,33 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .date-time-controls option:checked { background: #465c47 linear-gradient(0deg, #465c47, #465c47); color: #fff; }
 .date-time-foot { justify-content: flex-end; margin-top: 10px; }
 @media (max-width: 1280px) { .day-planner { grid-template-columns: minmax(0, 1fr) 290px; } .day-workload { grid-template-columns: repeat(3, 1fr); } .day-workload p { grid-column: 1 / -1; min-height: 42px; } }
+
+/* Week planner: airy multi-day schedule inspired by the reference grid. */
+.timeline-grid { grid-template-columns: 64px repeat(7, minmax(340px, 1fr)); gap: 0; padding: 0; border: 0; border-radius: 0; background: transparent; overflow-x: auto; overflow-y: hidden; }
+.timeline-axis, .timeline-column { min-width: 0; }
+.timeline-axis-head, .timeline-column > header { height: 176px; }
+.timeline-axis-head { border-bottom: 1px solid #dedfd9; }
+.timeline-label { height: 26px; padding-right: 16px; color: #737972; font: 14px/26px 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; text-align: right; }
+.timeline-column { position: relative; min-height: 0; padding: 0; border-radius: 0; overflow: hidden; background: #fffefa; border: 0; border-right: 1px solid #dedfd9; transition: background var(--motion-normal) ease, opacity var(--motion-normal) ease; }
+.timeline-column:first-of-type { border-left: 1px solid #dedfd9; }
+.timeline-column.distance-1, .timeline-column.distance-2, .timeline-column.distance-3 { opacity: 1; }
+.timeline-column > header { position: relative; z-index: 6; display: block; padding: 30px 34px 18px; margin: 0; box-sizing: border-box; background: #fffefa; }
+.timeline-day-label { width: auto; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; }
+.timeline-day-label span { color: #626861; font-size: 24px; line-height: 1.1; font-weight: 500; }
+.timeline-day-label b { color: #30342f; font: 700 56px/.95 'Segoe UI', 'Noto Sans SC', sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
+.timeline-column > header small { display: block; width: auto; margin-top: 15px; color: #626861; font: 20px/1.25 'Segoe UI', 'Noto Sans SC', sans-serif; font-variant-numeric: tabular-nums; text-align: left; }
+.timeline-add { position: absolute; top: 30px; right: 34px; z-index: 7; display: grid; place-items: center; align-self: auto; width: 44px; height: 44px; margin: 0; padding: 0 0 3px; border: 1px solid #cfd1ca; border-radius: 12px; background: transparent; color: #5f655e; font-size: 30px; font-weight: 300; line-height: 1; box-shadow: none; }
+.timeline-add:hover { background: #f0f2ed; border-color: #aeb9ae; color: #465c47; transform: none; }
+.timeline-column.selected-col { opacity: 1; transform: none; border-color: #dedfd9; box-shadow: none; background: #fffefa; }
+.timeline-column.today-col:not(.selected-col) { box-shadow: none; }
+.timeline-column.today-col .timeline-day-label b { color: #d98980; }
+.timeline-column.today-col .timeline-day-label b::after { content: '•'; display: inline-block; margin-left: 9px; color: #d98980; font-size: 34px; vertical-align: 13px; }
+.timeline-body { position: relative; height: 1664px; border-top: 1px solid #dedfd9; background: repeating-linear-gradient(to bottom, transparent 0, transparent 25px, #e1e3de 25px, #e1e3de 26px); }
+.timeline-slot { position: absolute; left: 0; right: 0; z-index: 1; border-bottom: 0; }
+.timeline-slot:nth-child(2n + 1) { border-top: 1px solid #d6d9d3; }
+.timeline-slot:hover { background: #f1f5f0; }
+.timeline-slot.drop-target { background: #dbe8da; box-shadow: inset 0 0 0 1px #789579; }
+.timeline-drop-preview { position: absolute; left: 12px; right: 12px; z-index: 3; overflow: hidden; padding: 8px 10px; border: 1px dashed #789579; border-radius: 8px; background: #dce9dcaa; color: #465c47; font-size: 11px; pointer-events: none; }
+.timeline-task { position: absolute; left: 12px; right: 12px; z-index: 2; overflow: hidden; margin: 0; padding: 8px 10px; cursor: grab; box-shadow: 0 4px 9px #465c4710; }
+.timeline-task:active { cursor: grabbing; }
+.timeline-task strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
