@@ -104,13 +104,15 @@ function validateAIResult(result) {
     const minutes = task.estimatedDuration == null ? undefined : Number(task.estimatedDuration)
     if (minutes !== undefined && (!Number.isFinite(minutes) || minutes < 0 || minutes > 10080)) throw new Error(`第 ${index + 1} 项预计工时无效`)
     for (const field of ['planDate', 'dueDate', 'eventDate']) if (task[field] && !/^\d{4}-\d{2}-\d{2}$/.test(task[field])) throw new Error(`第 ${index + 1} 项日期格式无效`)
+    if (task.startTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(task.startTime)) throw new Error(`第 ${index + 1} 项开始时间格式无效`)
+    if (task.reminderMinutes != null && (!Number.isInteger(Number(task.reminderMinutes)) || Number(task.reminderMinutes) < 0 || Number(task.reminderMinutes) > 10080)) throw new Error(`第 ${index + 1} 项提醒时间无效`)
     return { ...task, title: task.title.trim(), estimatedDuration: minutes }
   })
   return { summary: typeof result.summary === 'string' ? result.summary : '', eventDate: result.eventDate || undefined, tasks }
 }
 
 function reminderKey(task) {
-  return `${task.id}:${task.startAt}:${task.reminderMinutes || 0}`
+  return `${task.id}:${task.startAt || ''}:${task.reminderAt || ''}:${task.reminderMinutes ?? ''}`
 }
 
 function runReminderSweep() {
@@ -120,8 +122,11 @@ function runReminderSweep() {
   const log = { ...(data.notificationLog || {}) }
   let changed = false
   for (const task of data.tasks || []) {
-    if (task.status === 'done' || task.status === 'cancelled' || !task.startAt || task.reminderMinutes === undefined) continue
-    const at = new Date(task.startAt).getTime() - Number(task.reminderMinutes || 0) * 60000
+    if (task.status === 'done' || task.status === 'cancelled') continue
+    const at = task.reminderMinutes !== undefined && task.startAt
+      ? new Date(task.startAt).getTime() - Number(task.reminderMinutes || 0) * 60000
+      : task.reminderAt ? new Date(task.reminderAt).getTime() : NaN
+    if (!Number.isFinite(at)) continue
     const key = reminderKey(task)
     if (Math.abs(at - now) > 45000 || log[key]) continue
     const notification = new Notification({ title: 'D-Asst 提醒', body: `${task.title} · 即将开始`, silent: false })
@@ -216,7 +221,7 @@ app.whenReady().then(() => {
   ipcMain.handle('ai:parse', async (_event, payload) => {
     const categories = Array.isArray(payload?.context?.categories) ? payload.context.categories : []
     const today = new Date().toISOString().slice(0, 10)
-    const system = `你是 D-Asst 的任务规划助手。当前日期 ${today}，时区 Asia/Shanghai。只返回严格 JSON，不要 Markdown，不要解释。Schema：{"summary":string,"eventDate":string|null,"tasks":[{"title":string,"description":string,"categoryId":string,"categoryName":string,"estimatedDuration":number|null,"planDate":string|null,"dueDate":string|null,"eventDate":string|null,"important":boolean,"urgent":boolean,"parentIndex":number|null,"dependencyIndexes":number[],"sourceType":"explicit"|"inferred"|"suggested"}]}. 任务必须是可执行动作；用户明确提到的事项标记 explicit，依据上下文推断标记 inferred，额外补充的步骤标记 suggested。日期必须使用 YYYY-MM-DD；未确定就 null。不要为没有依据的任务编造时间。已有分类：${JSON.stringify(categories)}。请识别事件日期与准备任务的区别，并按预计工时和截止日期给出日期级建议。`
+    const system = `你是 D-Asst 的任务规划助手。当前日期 ${today}，时区 Asia/Shanghai。只返回严格 JSON，不要 Markdown，不要解释。Schema：{"summary":string,"eventDate":string|null,"tasks":[{"title":string,"description":string,"categoryId":string,"categoryName":string,"estimatedDuration":number|null,"planDate":string|null,"dueDate":string|null,"eventDate":string|null,"startTime":"HH:mm"|null,"reminderMinutes":number|null,"important":boolean,"urgent":boolean,"parentIndex":number|null,"dependencyIndexes":number[],"sourceType":"explicit"|"inferred"|"suggested"}]}. 任务必须是可执行动作；用户明确提到的事项标记 explicit，依据上下文推断标记 inferred，额外补充的步骤标记 suggested。日期必须使用 YYYY-MM-DD；未确定就 null。若用户明确说了某个事件的具体时间，将该日期放到 eventDate 和 planDate，并把时间写入 startTime。若用户要求“提前 X 分钟/小时提醒”，必须把 X 换算成 reminderMinutes 写入该任务；应用会直接创建系统提醒。绝对不要创建“设置提醒”“在手机日历中设置”之类的替代任务，也不要告诉用户自己去设置手机提醒。提醒针对事件本身，不是单独任务。没有明确时间就不要编造 startTime 或 reminderMinutes。不要为没有依据的任务编造时间。已有分类：${JSON.stringify(categories)}。请识别事件日期与准备任务的区别，并按预计工时和截止日期给出日期级建议。`
     const raw = await callAI([{ role: 'system', content: system }, { role: 'user', content: String(payload?.text || '') }])
     return validateAIResult(extractJSON(raw))
   })
