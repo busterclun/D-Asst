@@ -44,6 +44,54 @@ export function normalizeTask(task: Task): Task {
   return next
 }
 
+const recurringIdentity = (task: Task) => [
+  task.title.trim().toLocaleLowerCase(), task.categoryId || '', task.recurrenceRule || '',
+  task.description || '', task.important ? 'important' : '', task.urgent ? 'urgent' : '',
+  task.estimatedDuration ?? ''
+].join('|')
+
+/**
+ * Older builds created the next recurring record by copying the current
+ * datePlans. Those records have a start date different from their only plan
+ * date and therefore all render on the original day. Collapse only that
+ * recognizable legacy shape; two intentionally-created recurring tasks with
+ * matching dates are left alone.
+ */
+function isLegacyRecurringClone(task: Task): boolean {
+  const plan = task.datePlans?.length === 1 ? task.datePlans[0].date : undefined
+  return Boolean(task.recurrenceRule && plan && task.startAt && dateKey(task.startAt) !== plan)
+}
+
+function dedupeLegacyRecurringTasks(tasks: Task[]): Task[] {
+  const output: Task[] = []
+  const indexes = new Map<string, number>()
+  for (const task of tasks) {
+    if (!task.recurrenceRule || task.datePlans?.length !== 1) {
+      output.push(task)
+      continue
+    }
+    const key = `${recurringIdentity(task)}|${task.datePlans[0].date}`
+    const previousIndex = indexes.get(key)
+    if (previousIndex === undefined) {
+      indexes.set(key, output.length)
+      output.push(task)
+      continue
+    }
+    const previous = output[previousIndex]
+    const previousIsClone = isLegacyRecurringClone(previous)
+    const currentIsClone = isLegacyRecurringClone(task)
+    if (previousIsClone || currentIsClone) {
+      // Prefer the canonical record whose start date agrees with its plan.
+      if (previousIsClone && !currentIsClone) output[previousIndex] = task
+      continue
+    }
+    // Matching canonical records may be intentional separate tasks.
+    indexes.delete(key)
+    output.push(task)
+  }
+  return output
+}
+
 export function normalizeData(data: AppData): AppData {
   const settings = data?.settings || {} as AppData['settings']
   return {
@@ -55,7 +103,7 @@ export function normalizeData(data: AppData): AppData {
       defaultTaskDuration: settings.defaultTaskDuration || DEFAULT_TASK_DURATION,
       dailyCapacityMinutes: settings.dailyCapacityMinutes ?? 300
     },
-    tasks: (data?.tasks || []).map(normalizeTask),
+    tasks: dedupeLegacyRecurringTasks((data?.tasks || []).map(normalizeTask)),
     notificationLog: data.notificationLog || {}
   }
 }

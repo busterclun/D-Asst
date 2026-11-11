@@ -105,12 +105,11 @@ function App() {
   }
   const toggleTask = (task: Task) => {
     const done = task.status !== 'done'
+    // Completing a recurring task marks this occurrence as done. It must not
+    // clone another task record: cloning copied the original date plan and
+    // made the new occurrence appear as a duplicate on the same day.
     const nextTasks = data.tasks.map(t => t.id === task.id ? { ...t, status: done ? 'done' as const : 'todo' as const, updatedAt: new Date().toISOString() } : t)
-    if (done && task.recurrenceRule) {
-      const next = new Date(task.startAt || Date.now()); next.setDate(next.getDate() + (task.recurrenceRule === 'weekly' ? 7 : 1))
-      nextTasks.push({ ...task, id: crypto.randomUUID(), status: 'todo', startAt: next.toISOString(), dueAt: next.toISOString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
-    }
-    commit({ ...data, tasks: nextTasks }, done ? '已完成，已生成下一次任务' : '已恢复未完成')
+    commit({ ...data, tasks: nextTasks }, done ? '已完成任务' : '已恢复未完成')
   }
   const flash = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2200) }
   const onPlanDate = (taskId: string, date: Date) => { const task = data.tasks.find(item => item.id === taskId); if (!task) return; const next = moveTaskDate(task, date); commit({ ...data, tasks: data.tasks.map(item => item.id === taskId ? next : item) }, `已安排到 ${dateLabel(date)}`) }
