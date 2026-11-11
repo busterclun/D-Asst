@@ -5,6 +5,7 @@ const fs = require('fs')
 let mainWindow
 let tray
 let closeBehavior = 'ask'
+let reminderTimer
 const dataPath = () => path.join(app.getPath('userData'), 'd-asst-data.json')
 const windowStatePath = () => path.join(app.getPath('userData'), 'window-state.json')
 
@@ -15,7 +16,8 @@ const initialData = {
     { id: 'life', name: '生活', color: '#d98980' },
     { id: 'exercise', name: '锻炼', color: '#5b8c88' }
   ],
-  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai' }
+  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai' },
+  notificationLog: {}
 }
 
 function readData() {
@@ -36,6 +38,38 @@ function writeData(data) {
   fs.writeFileSync(temp, payload, 'utf8')
   if (fs.existsSync(target)) fs.copyFileSync(target, backup)
   fs.renameSync(temp, target)
+}
+
+function reminderKey(task) {
+  return `${task.id}:${task.startAt}:${task.reminderMinutes || 0}`
+}
+
+function runReminderSweep() {
+  const data = readData()
+  if (!data || !data.settings?.notifications || !Notification.isSupported()) return
+  const now = Date.now()
+  const log = { ...(data.notificationLog || {}) }
+  let changed = false
+  for (const task of data.tasks || []) {
+    if (task.status === 'done' || task.status === 'cancelled' || !task.startAt || task.reminderMinutes === undefined) continue
+    const at = new Date(task.startAt).getTime() - Number(task.reminderMinutes || 0) * 60000
+    const key = reminderKey(task)
+    if (Math.abs(at - now) > 45000 || log[key]) continue
+    const notification = new Notification({ title: 'D-Asst 提醒', body: `${task.title} · 即将开始`, silent: false })
+    notification.on('click', showWindow)
+    notification.show()
+    log[key] = new Date().toISOString()
+    changed = true
+  }
+  const keys = Object.keys(log)
+  if (keys.length > 500) for (const key of keys.slice(0, keys.length - 500)) delete log[key]
+  if (changed) writeData({ ...data, notificationLog: log })
+}
+
+function startReminderScheduler() {
+  if (reminderTimer) clearInterval(reminderTimer)
+  runReminderSweep()
+  reminderTimer = setInterval(runReminderSweep, 15000)
 }
 
 function showWindow() {
@@ -100,7 +134,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   ipcMain.handle('data:load', () => readData())
-  ipcMain.handle('data:save', (_event, data) => { writeData(data); return true })
+  ipcMain.handle('data:save', (_event, data) => { writeData(data); runReminderSweep(); return true })
   ipcMain.on('window:close-response', (_event, action) => {
     if (action === 'quit') { closeBehavior = 'quit'; app.quit() }
     else if (action === 'tray') { closeBehavior = 'tray'; mainWindow.hide() }
@@ -114,6 +148,7 @@ app.whenReady().then(() => {
   })
   createWindow()
   createTray()
+  startReminderScheduler()
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); else showWindow() })
 })
 
