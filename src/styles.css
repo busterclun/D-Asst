@@ -318,3 +318,35 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
   .week-overview .timeline-column > header { padding-left: 9px; padding-right: 9px; }
   .week-overview .timeline-add { right: 7px; }
 }
+
+/* V2.0: simple date-level day/week views. Exact time planning stays on the planner page. */
+.day-list-shell { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+.day-list-panel { padding: 20px 24px; }
+.day-load-summary { display: block; margin-top: 5px; color: #89938a; font-size: 11px; }
+.week-list-shell { display: grid; gap: 18px; }
+.week-list-toolbar { justify-content: center; }
+.week-list-grid { display: grid; grid-template-columns: repeat(7, minmax(150px, 1fr)); gap: 1px; border: 1px solid #e1e5df; border-radius: 16px; overflow: hidden; background: #e1e5df; }
+.week-list-column { min-width: 0; min-height: 520px; background: #fffefa; transition: background var(--motion-fast) ease, box-shadow var(--motion-fast) ease; }
+.week-list-column.selected-col { box-shadow: inset 0 3px #465c47; }
+.week-list-column.today-col header b { color: #d98980; }
+.week-list-column > header { min-height: 132px; padding: 18px 14px 14px; border-bottom: 1px solid #e5e8e3; position: relative; cursor: pointer; }
+.week-list-column > header > div { display: flex; flex-direction: column; gap: 3px; }
+.week-list-column > header span { color: #788379; font-size: 14px; }
+.week-list-column > header b { color: #303e33; font-size: 34px; line-height: 1; }
+.week-list-column > header small { display: block; margin-top: 11px; color: #8f9990; font-size: 11px; }
+.week-list-column .timeline-add { top: 16px; right: 12px; width: 32px; height: 32px; border: 1px solid #d9dfd8; border-radius: 9px; background: #fffefa; color: #637166; font-size: 21px; }
+.week-list-tasks { padding: 8px; min-height: 360px; }
+.week-list-task { position: relative; display: flex; align-items: flex-start; gap: 8px; min-width: 0; margin: 6px 0; padding: 10px 9px; border-left: 3px solid #465c47; border-radius: 8px; background: #f5f7f3; cursor: grab; }
+.week-list-task:active { cursor: grabbing; }
+.week-list-task .task-check { position: static; width: 17px; height: 17px; flex: 0 0 auto; margin-top: 1px; }
+.week-list-task > div { min-width: 0; flex: 1; }
+.week-list-task strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 500; }
+.week-list-task span { display: block; margin-top: 4px; color: #8d988e; font-size: 10px; }
+.week-list-task .priority-dot { margin-top: 4px; }
+.week-list-task .priority-star { margin-top: 1px; }
+.week-list-task.completed strong { color: #9da69f; text-decoration: line-through; }
+.week-list-empty { padding: 18px 5px; color: #b0b8b0; font-size: 11px; text-align: center; }
+@media (max-width: 1100px) {
+  .week-list-grid { grid-template-columns: repeat(7, minmax(130px, 1fr)); overflow-x: auto; }
+  .week-list-column { min-width: 130px; }
+}

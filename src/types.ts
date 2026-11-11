@@ -1,4 +1,4 @@
-export type ViewId = 'dashboard' | 'quadrants' | 'list' | 'day' | 'week' | 'month' | 'ai' | 'settings'
+export type ViewId = 'dashboard' | 'quadrants' | 'list' | 'day' | 'week' | 'month' | 'planner' | 'ai' | 'settings'
 export type TaskStatus = 'todo' | 'doing' | 'done' | 'cancelled'
 
 export interface Category { id: string; name: string; color: string }
@@ -7,6 +7,11 @@ export interface TimeBlock {
   taskId: string
   startAt: string
   endAt: string
+}
+/** A date-level plan. Minutes are optional because a task may be assigned to a date without an estimate. */
+export interface DatePlan {
+  date: string
+  minutes?: number
 }
 export interface Task {
   id: string
@@ -19,11 +24,16 @@ export interface Task {
   status: TaskStatus
   createdAt: string
   updatedAt: string
+  /** Date-level planning, independent from exact time blocks and deadline. */
+  datePlans?: DatePlan[]
   startAt?: string
+  /** Exact execution block end. Kept separate from dueAt (deadline). */
   endAt?: string
   dueAt?: string
   estimatedDuration?: number
   scheduleBlocks?: TimeBlock[]
+  /** Optional absolute reminder timestamp. reminderMinutes remains a relative legacy setting. */
+  reminderAt?: string
   reminderMinutes?: number
   recurrenceRule?: string
   parentTaskId?: string
@@ -37,6 +47,8 @@ export interface Settings {
   notifications: boolean
   timezone: string
   defaultTaskDuration: number
+  /** Daily planning capacity used by date-level scheduling suggestions. */
+  dailyCapacityMinutes?: number
 }
 
 export interface AppData {

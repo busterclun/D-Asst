@@ -11,7 +11,7 @@ export const seedData: AppData = {
     { id: 'life', name: '生活', color: '#d98980' },
     { id: 'exercise', name: '锻炼', color: '#5b8c88' }
   ],
-  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai', defaultTaskDuration: 30 },
+  settings: { theme: 'system', closeBehavior: 'ask', notifications: true, timezone: 'Asia/Shanghai', defaultTaskDuration: 30, dailyCapacityMinutes: 300 },
   notificationLog: {},
   tasks: []
 }
@@ -20,7 +20,7 @@ const seedTasks = (): Task[] => {
   const today = new Date()
   const add = (title: string, categoryId: string, offset: number, hour: number, extra: Partial<Task> = {}): Task => {
     const day = new Date(today); day.setDate(today.getDate() + offset)
-    return { id: crypto.randomUUID(), title, description: '', categoryId, tags: [], important: false, urgent: false, status: 'todo', createdAt: now, updatedAt: now, startAt: iso(day, hour), dueAt: iso(day, hour + 1), source: 'seed', ...extra }
+    return { id: crypto.randomUUID(), title, description: '', categoryId, tags: [], important: false, urgent: false, status: 'todo', createdAt: now, updatedAt: now, startAt: iso(day, hour), endAt: iso(day, hour + 1), datePlans: [{ date: `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}` }], source: 'seed', ...extra }
   }
   return [
     add('整理今天的工作计划', 'work', 0, 8, { important: true, urgent: true, estimatedDuration: 30 }),
