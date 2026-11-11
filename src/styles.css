@@ -69,10 +69,8 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .title-english { display: block; margin-top: 2px; color: #9aa49c; font-size: 9px; line-height: 1; letter-spacing: .2em; font-family: 'Segoe UI', sans-serif; }
 .topbar h1 { margin-top: 5px; }
 .top-actions button { transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease, background var(--motion-fast) ease; }
-.icon-button:hover, .profile-button:hover { transform: translateY(-2px); box-shadow: 0 7px 15px #465c4722; }
+.icon-button:hover { transform: translateY(-2px); box-shadow: 0 7px 15px #465c4722; }
 .icon-button.feedback { transform: translateY(-3px) scale(1.06); box-shadow: 0 9px 18px #465c4735; }
-.profile-button { display: flex; align-items: center; justify-content: center; gap: 3px; border: 0; }
-.profile-button i { font-style: normal; font-size: 10px; opacity: .55; }
 .selection-toolbar { position: sticky; top: 12px; z-index: 5; display: flex; align-items: center; gap: 8px; width: fit-content; margin: 12px auto -4px; padding: 8px 10px 8px 14px; border: 1px solid #d9e3d9; border-radius: 999px; background: #fffffff2; box-shadow: 0 10px 24px #465c4716; color: #465c47; font-size: 11px; }
 .selection-toolbar button { border-radius: 999px; padding: 6px 10px; background: #e9f0e9; color: #465c47; font-size: 11px; }
 .selection-toolbar button.quiet { background: transparent; color: #879188; }

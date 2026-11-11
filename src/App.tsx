@@ -43,6 +43,18 @@ function App() {
   const [future, setFuture] = useState<AppData[]>([])
   const [themePulse, setThemePulse] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [settingsReturnView, setSettingsReturnView] = useState<ViewId>('dashboard')
+
+  const navigateTo = (next: ViewId) => {
+    if (next === 'settings') {
+      if (view === 'settings') {
+        setView(settingsReturnView)
+        return
+      }
+      setSettingsReturnView(view)
+    }
+    setView(next)
+  }
 
   useEffect(() => { loadData().then(setData) }, [])
   useEffect(() => { if (data) saveData(data) }, [data])
@@ -177,11 +189,11 @@ function App() {
     <aside className={`sidebar ${sidebarCollapsed ? 'is-collapsed' : ''}`}>
       <div className="sidebar-head"><div className="brand"><div className="brand-mark">D</div><div className="brand-copy"><strong>D-Asst</strong><span>让计划自然发生</span></div></div><button className="sidebar-toggle" onClick={() => setSidebarCollapsed(value => !value)} title={sidebarCollapsed ? '展开侧边栏' : '收缩侧边栏'} aria-label={sidebarCollapsed ? '展开侧边栏' : '收缩侧边栏'}>{sidebarCollapsed ? '›' : '‹'}</button></div>
       <button className="quick-add" onClick={() => setModal({ date: selectedDate })} title="快速添加任务"><span>＋</span><b>快速添加任务</b><kbd>Ctrl N</kbd></button>
-      <nav>{nav.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} onClick={() => setView(item.id)} title={item.label}><i>{item.icon}</i><span className="nav-label">{item.label}</span></button>)}</nav>
-      <div className="sidebar-bottom"><button onClick={() => setView('settings')} className={view === 'settings' ? 'active' : ''} title="设置"><i>⚙</i><span className="nav-label">设置</span></button><div className="watermark">D-Asst · DESIGN PREVIEW</div></div>
+      <nav>{nav.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} onClick={() => navigateTo(item.id)} title={item.label}><i>{item.icon}</i><span className="nav-label">{item.label}</span></button>)}</nav>
+      <div className="sidebar-bottom"><button onClick={() => navigateTo('settings')} className={view === 'settings' ? 'active' : ''} title={view === 'settings' ? '返回原页面' : '打开设置'}><i>⚙</i><span className="nav-label">设置</span></button><div className="watermark">D-Asst · DESIGN PREVIEW</div></div>
     </aside>
     <main className="main">
-      <header className="topbar"><div><span className="eyebrow">{view === 'dashboard' ? '今天' : nav.find(n => n.id === view)?.label || '设置'}</span><span className="title-english">{viewEnglish[view]}</span><h1>{viewTitle(view, selectedDate)}</h1></div><div className="top-actions"><label className="search"><span>⌕</span><input placeholder="搜索任务" value={search} onChange={e => setSearch(e.target.value)} /></label><button className={`icon-button ${themePulse ? 'feedback' : ''}`} onClick={toggleTheme} title={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-label={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-pressed={data.settings.theme === 'dark'}>◐</button><button className="avatar profile-button" onClick={() => setView(view === 'settings' ? 'dashboard' : 'settings')} title={view === 'settings' ? '返回工作台' : '打开偏好设置'} aria-label={view === 'settings' ? '返回工作台' : '打开偏好设置'}><span>我</span><i>⌄</i></button></div></header>
+      <header className="topbar"><div><span className="eyebrow">{view === 'dashboard' ? '今天' : nav.find(n => n.id === view)?.label || '设置'}</span><span className="title-english">{viewEnglish[view]}</span><h1>{viewTitle(view, selectedDate)}</h1></div><div className="top-actions"><label className="search"><span>⌕</span><input placeholder="搜索任务" value={search} onChange={e => setSearch(e.target.value)} /></label><button className={`icon-button ${themePulse ? 'feedback' : ''}`} onClick={toggleTheme} title={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-label={data.settings.theme === 'dark' ? '切换浅色模式' : '切换深色模式'} aria-pressed={data.settings.theme === 'dark'}>◐</button></div></header>
       {selectedIds.length > 0 && <div className="selection-toolbar"><strong>已选择 {selectedIds.length} 项</strong><select aria-label="批量修改分类" value={batchCategoryId} onChange={e => setBatchCategoryId(e.target.value)}><option value="">修改分类…</option>{data.categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}</select><input aria-label="批量修改日期" type="date" value={batchDate} onChange={e => setBatchDate(e.target.value)} /><button disabled={!batchCategoryId && !batchDate} onClick={batchApply}>应用修改</button><button onClick={batchComplete}>标记完成</button><button onClick={batchDelete}>删除</button><button className="quiet" onClick={() => setSelectedIds([])}>取消选择</button></div>}
       <div className="content">{view === 'dashboard' && <Dashboard tasks={visibleTasks} categories={data.categories} onToggle={toggleTask} onOpen={task => setModal({ task })} onAdd={() => setModal({ date: selectedDate })} />}
         {view === 'quadrants' && <Quadrants tasks={visibleTasks} categories={data.categories} onToggle={toggleTask} onOpen={task => setModal({ task })} onDropQuadrant={(id, important, urgent) => updateTask(id, { important, urgent })} onAdd={() => setModal({ date: selectedDate })} />}
