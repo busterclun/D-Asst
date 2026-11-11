@@ -45,7 +45,7 @@ function reminderTaskTitle(text: string) {
   const title = text.replace(/^(帮我|请|需要|我要|设置|安排|创建)\s*/g, '')
     .replace(/提前\s*(?:\d+(?:\.\d+)?|一|两|二|三|四|五|六|七|八|九|十)\s*(?:个)?\s*(?:小时|小時|h|分钟|分鐘|min)/i, '')
     .replace(/提醒我?/g, '').replace(/(?:明天|明晚|今晚|今天)\s*\d{1,2}(?:点|:\s*\d{2})?\s*(?:的)?/g, '')
-    .trim()
+    .replace(/^(设置|安排|创建)\s*/, '').trim()
   return title || '提醒事项'
 }
 
