@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { AIConfigInput, AIConfigPublic } from './types'
 
-const defaults: AIConfigInput = { providerName: 'OpenAI 兼容接口', baseUrl: 'https://api.openai.com/v1', apiKey: '', model: 'gpt-4o-mini', timeoutMs: 30000, maxTokens: 1200, temperature: 0.2 }
+const defaults: AIConfigInput = { providerName: 'OpenAI 兼容接口', baseUrl: 'https://api.openai.com/v1', apiKey: '', model: 'gpt-4o-mini', timeoutMs: 30000, maxTokens: 2400, temperature: 0.2 }
 
 export function AISettings() {
   const [config, setConfig] = useState<AIConfigInput>(defaults)

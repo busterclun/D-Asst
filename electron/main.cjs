@@ -79,14 +79,17 @@ async function callAI(messages, configOverride) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), Math.max(3000, Number(config.timeoutMs) || 30000))
   try {
-    const response = await fetch(normalizeAIUrl(config.baseUrl), { method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.apiKey}` }, body: JSON.stringify({ model: config.model, messages, temperature: Number(config.temperature) || 0.2, max_tokens: Number(config.maxTokens) || 1200 }) })
+    const deepSeek = /deepseek\.com/i.test(String(config.baseUrl))
+    const requestBody = { model: config.model, messages, temperature: Number(config.temperature) || 0.2, max_tokens: deepSeek ? Math.max(2400, Number(config.maxTokens) || 1200) : Number(config.maxTokens) || 1200, ...(deepSeek ? { thinking: { type: 'disabled' }, response_format: { type: 'json_object' } } : {}) }
+    const response = await fetch(normalizeAIUrl(config.baseUrl), { method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.apiKey}` }, body: JSON.stringify(requestBody) })
     const raw = await response.text()
     let body
     try { body = JSON.parse(raw) } catch { throw new Error(`接口返回了无效 JSON（HTTP ${response.status}）`) }
     if (!response.ok) { const detail = body?.error?.message || body?.message || `HTTP ${response.status}`; throw new Error(`模型请求失败：${detail}`) }
-    const content = body?.choices?.[0]?.message?.content
+    const choice = body?.choices?.[0]
+    const content = choice?.message?.content
     if (Array.isArray(content)) return content.map(item => item?.text || '').join('')
-    if (!content) throw new Error('模型返回为空')
+    if (!content) throw new Error(`模型返回为空（finish_reason: ${choice?.finish_reason || 'unknown'}）。请将最大输出 Token 调高后重试。`)
     return content
   } catch (error) {
     if (error?.name === 'AbortError') throw new Error('模型请求超时，请检查网络或增加请求超时设置')
