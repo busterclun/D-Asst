@@ -6,7 +6,9 @@ const minutesBetween = (start: string, end: string) => Math.max(0, Math.round((n
 const pad = (value: number) => String(value).padStart(2, '0')
 export const dateKey = (value: Date | string) => {
   const date = value instanceof Date ? new Date(value) : new Date(value)
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date)
+  const part = (type: string) => parts.find(item => item.type === type)?.value || ''
+  return `${part('year')}-${part('month')}-${part('day')}`
 }
 
 export function taskBlocks(task: Task): TimeBlock[] {

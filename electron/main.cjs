@@ -68,12 +68,14 @@ function normalizeAIUrl(value) {
 // AI 规划日期必须使用用户所在时区，而不是 UTC 日期。凌晨时
 // `toISOString().slice(0, 10)` 仍可能返回前一天，导致“今天/这两天”被排到昨天。
 function localDateKey(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value)
+  if (!Number.isFinite(date.getTime())) return ''
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  }).formatToParts(value)
+  }).formatToParts(date)
   const part = (type) => parts.find(item => item.type === type)?.value || ''
   return `${part('year')}-${part('month')}-${part('day')}`
 }
@@ -181,7 +183,8 @@ function createTray() {
   tray = new Tray(icon)
   tray.setToolTip('D-Asst')
   const tasks = readData()?.tasks || []
-  const today = tasks.filter(t => t.status !== 'done' && t.startAt && new Date(t.startAt).toDateString() === new Date().toDateString()).slice(0, 5)
+  const todayKey = localDateKey()
+  const today = tasks.filter(t => t.status !== 'done' && t.startAt && localDateKey(t.startAt) === todayKey).slice(0, 5)
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: '显示 D-Asst', click: showWindow },
     { label: `今日待办（${today.length}）`, enabled: today.length > 0, click: showWindow },

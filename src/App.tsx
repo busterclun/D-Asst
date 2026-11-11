@@ -15,7 +15,7 @@ const nav: { id: ViewId; label: string; icon: string }[] = [
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const clockLabel = (minute: number) => `${pad(Math.floor(minute / 60))}:${pad(minute % 60)}`
-const dayKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+const dayKey = (d: Date) => planDateKey(d)
 const sameDay = (value: string | undefined, d: Date) => Boolean(value && dayKey(new Date(value)) === dayKey(d))
 const dateLabel = (d: Date) => `${d.getMonth() + 1}月${d.getDate()}日`
 const weekLabel = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
