@@ -185,7 +185,7 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .day-timeline-slot:nth-child(4n + 1) { border-top-color: #d4ded4; }
 .day-timeline-body:has(.day-timeline-slot:hover) { background-color: #f8faf7; }
 .day-timeline-preview { position: absolute; left: 8px; right: 8px; z-index: 3; padding: 7px 9px; border: 1px dashed #789579; border-radius: 8px; background: #dce9dcaa; color: #465c47; font-size: 10px; pointer-events: none; }
-.day-task-block { position: absolute; left: 8px; right: 8px; z-index: 4; overflow: hidden; padding: 9px 13px; border-left: 3px solid #465c47; border-radius: 8px; background: #fff; box-shadow: 0 5px 12px #465c4718; cursor: grab; }
+.day-task-block { position: absolute; left: 8px; right: 8px; z-index: 4; overflow: hidden; container-type: size; padding: 9px 13px; border-left: 3px solid #465c47; border-radius: 8px; background: #fff; box-shadow: 0 5px 12px #465c4718; cursor: grab; }
 .day-task-block.dragging, .timeline-task.dragging { opacity: 0; pointer-events: none; }
 .day-task-block:hover { box-shadow: 0 8px 18px #465c4725; }
 .day-task-block.conflict { background: #fff4f1; border-left-color: #d98980 !important; box-shadow: 0 0 0 1px #d9898055, 0 5px 12px #d9898018; }
@@ -202,6 +202,15 @@ h1, h2, h3 { letter-spacing: -.045em; color: var(--ink-warm); }
 .day-task-remove { right: 5px; }
 .day-task-toggle { left: 5px; color: #80a487; font-size: 11px; }
 .day-task-block.completed .day-task-toggle { background: #89b591; color: #fff; }
+@container (max-height: 44px) {
+  .day-task-block { display: flex; align-items: center; gap: 8px; padding: 4px 35px 4px 13px; }
+  .day-task-block > span { flex: 0 0 auto; padding-left: 28px; line-height: 1.2; }
+  .day-task-block > strong { min-width: 0; flex: 1; margin-top: 0; padding: 0; line-height: 1.2; }
+  .day-task-toggle, .day-task-remove { top: 50%; transform: translateY(-50%); }
+}
+@container (min-height: 72px) {
+  .day-task-block > strong { font-size: 13px; }
+}
 .unscheduled-panel { min-height: 240px; max-height: calc(100vh - 180px); overflow: hidden; border: 1px solid #e1e7df; border-radius: 16px; background: #fff; box-shadow: 0 12px 30px #465c4712; }
 .unscheduled-panel.collapsed { width: 54px; }
 .unscheduled-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 17px 15px; border-bottom: 1px solid #edf0eb; }
