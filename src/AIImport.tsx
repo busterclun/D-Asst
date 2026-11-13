@@ -17,7 +17,15 @@ function inferDate(text: string) {
   const numeric = text.match(/(?:(\d{4})年)?\s*(\d{1,2})月\s*(\d{1,2})[日号]?/)
   if (numeric) { const year = Number(numeric[1] || now.getFullYear()); return `${year}-${pad(Number(numeric[2]))}-${pad(Number(numeric[3]))}` }
   const chinese = text.match(/(?:(\d{4})年)?\s*([一二三四五六七八九十]+)月\s*([一二三四五六七八九十]+)[日号]?/)
-  if (chinese) { const toNum = (v: string) => v === '十' ? 10 : v.length === 2 && v[0] === '十' ? 10 + '一二三四五六七八九'.indexOf(v[1]) : v.length === 2 ? '一二三四五六七八九'.indexOf(v[0]) * 10 + '一二三四五六七八九'.indexOf(v[1]) + 11 : '一二三四五六七八九'.indexOf(v[0]) + 1; return `${Number(chinese[1] || now.getFullYear())}-${pad(toNum(chinese[2]))}-${pad(toNum(chinese[3]))}` }
+  if (chinese) {
+    const digits: Record<string, number> = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 }
+    const toNum = (value: string) => {
+      if (!value.includes('十')) return digits[value] || 0
+      const [tens, ones] = value.split('十')
+      return (tens ? (digits[tens] || 0) * 10 : 10) + (ones ? (digits[ones] || 0) : 0)
+    }
+    return `${Number(chinese[1] || now.getFullYear())}-${pad(toNum(chinese[2]))}-${pad(toNum(chinese[3]))}`
+  }
   const offset = text.includes('后天') ? 2 : text.includes('明天') || text.includes('明晚') ? 1 : text.includes('今天') || text.includes('今晚') ? 0 : undefined
   if (offset !== undefined) { now.setDate(now.getDate() + offset); return dateKey(now) }
   return undefined
