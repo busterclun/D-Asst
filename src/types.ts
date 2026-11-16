@@ -36,6 +36,8 @@ export interface Task {
   reminderAt?: string
   reminderMinutes?: number
   recurrenceRule?: string
+  /** Completed recurrence instances, stored as Asia/Shanghai YYYY-MM-DD keys. */
+  completedOccurrences?: string[]
   parentTaskId?: string
   dependencyIds?: string[]
   source: 'manual' | 'ai' | 'seed'

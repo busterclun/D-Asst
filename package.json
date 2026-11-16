@@ -1,6 +1,6 @@
 {
   "name": "d-asst",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "author": "D-Asst",
   "description": "D-Asst — Windows AI task and time management app",
@@ -35,8 +35,26 @@
     "appId": "com.dasst.desktop",
     "productName": "D-Asst",
     "asar": true,
-    "files": ["dist/**/*", "electron/**/*", "package.json"],
-    "win": { "signAndEditExecutable": false, "target": [{ "target": "portable", "arch": ["x64"] }] },
-    "portable": { "artifactName": "D-Asst-${version}-portable.exe" }
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "assets/app-icon.png",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "D-Asst-${version}-portable.exe"
+    }
   }
 }

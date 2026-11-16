@@ -130,7 +130,11 @@ export function plannedMinutesForDate(task: Task, date: Date | string): number {
   const exact = taskBlocks(task).filter(block => dateKey(block.startAt) === key).reduce((sum, block) => sum + blockMinutes(block), 0)
   if (exact > 0) return exact
   const plans = datePlansFor(task).filter(plan => plan.date === key)
-  if (!plans.length) return 0
+  if (!plans.length) {
+    if (!taskOccursOnDate(task, date)) return 0
+    const anchor = datePlansFor(task)[0]
+    return anchor?.minutes ?? task.estimatedDuration ?? 0
+  }
   if (plans.some(plan => plan.minutes !== undefined)) return plans.reduce((sum, plan) => sum + (plan.minutes || 0), 0)
   return plans.length === 1 ? task.estimatedDuration || 0 : 0
 }
@@ -152,7 +156,32 @@ export function remainingMinutes(task: Task): number {
 
 export function taskHasDate(task: Task, date: Date): boolean {
   const key = dateKey(date)
-  return datePlansFor(task).some(plan => plan.date === key) || taskBlocks(task).some(block => dateKey(block.startAt) === key || dateKey(block.endAt) === key)
+  return taskOccursOnDate(task, date) || datePlansFor(task).some(plan => plan.date === key) || taskBlocks(task).some(block => dateKey(block.startAt) === key || dateKey(block.endAt) === key)
+}
+
+function recurrenceAnchor(task: Task): string | undefined {
+  return datePlansFor(task).map(plan => plan.date).sort()[0]
+    || (task.startAt ? dateKey(task.startAt) : undefined)
+    || (task.createdAt ? dateKey(task.createdAt) : undefined)
+}
+
+/** Recurrence expands only in the view; it never creates duplicate task rows in storage. */
+export function taskOccursOnDate(task: Task, date: Date | string): boolean {
+  if (!task.recurrenceRule) return false
+  const key = dateKey(date)
+  const anchor = recurrenceAnchor(task)
+  if (!anchor || key < anchor) return false
+  if (task.recurrenceRule === 'daily') return true
+  if (task.recurrenceRule === 'weekly') {
+    const weekday = (value: string) => new Date(`${value}T00:00:00+08:00`).getUTCDay()
+    return weekday(key) === weekday(anchor)
+  }
+  return false
+}
+
+export function taskCompletedOnDate(task: Task, date: Date | string): boolean {
+  if (!task.recurrenceRule) return task.status === 'done'
+  return (task.completedOccurrences || []).includes(dateKey(date))
 }
 
 export function firstTaskStart(task: Task): string | undefined {

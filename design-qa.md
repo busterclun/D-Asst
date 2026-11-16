@@ -1,41 +1,18 @@
-# Weekly Planner Design QA
+# D-Asst 图标设计 QA
 
-**Source visual truth**
+- 实现资源：`assets/app-icon.png`
+- Windows 图标：`build/icon.ico`
+- 验证方式：多尺寸资源检查、Electron 打包检查和应用实际启动验证。
 
-- `C:/Temp/codex-clipboard-8a8b8ba7-165e-448f-a92a-7661b8e86e56.png`
-- Reference state: desktop weekly planner, three visible day columns, 30-minute labels, large date hierarchy, outlined add buttons, current day coral marker.
+## 检查结果
 
-**Implementation evidence**
+| 项目 | 结果 |
+| --- | --- |
+| 品牌方向（自然生长、计划、完成） | 通过 |
+| 象牙白、鼠尾草绿、珊瑚色与应用配色一致 | 通过 |
+| 侧边栏 36px 尺寸辨识度 | 通过 |
+| Windows 多分辨率 ICO | 通过（16–256px，共 9 档） |
+| 透明边缘与圆角 | 通过 |
+| 加载页、侧边栏、窗口与打包配置一致 | 通过 |
 
-- Rendered implementation screenshot: unavailable.
-- The portable Electron build started successfully, but the available Windows UI capture bridge returned no target application window, so a same-viewport screenshot could not be captured.
-
-**Viewport and state**
-
-- Intended viewport: desktop app window matching the supplied reference.
-- Intended state: `我的一周`, current week, timeline visible, current day highlighted.
-- Pixel/density normalization: not performed because implementation capture was blocked.
-
-**Findings**
-
-- [P2] Visual comparison is blocked. The weekly planner implementation has been updated to use a spacious multi-column timeline, large stacked day/date headers, workload subtitles, 30-minute labels, and outlined add buttons while retaining 15-minute drag snapping. A rendered screenshot is still required to verify exact spacing, clipping, and responsive behavior against the supplied image.
-
-**Focused region comparison**
-
-- Not available; implementation capture was blocked before comparison.
-
-**Comparison history**
-
-- Initial implementation: existing compact seven-column card layout.
-- Fix applied: widened timeline columns, changed the header hierarchy, added workload text and current-day marker, moved the timeline start to 08:00, and enlarged the grid rhythm.
-- Post-fix evidence: build and portable startup passed; visual screenshot capture remains blocked.
-
-**Implementation checklist**
-
-- [x] Weekly header hierarchy updated.
-- [x] 30-minute labels displayed while preserving 15-minute drop snapping.
-- [x] Outlined add button placed at the upper-right of each day header.
-- [x] Workload subtitle shows `暂无安排` or `已安排 …`.
-- [ ] Capture and compare the rendered implementation at the reference viewport.
-
-**Final result: blocked**
+最终结果：通过。

@@ -9,6 +9,7 @@ let reminderTimer
 const dataPath = () => path.join(app.getPath('userData'), 'd-asst-data.json')
 const windowStatePath = () => path.join(app.getPath('userData'), 'window-state.json')
 const aiConfigPath = () => path.join(app.getPath('userData'), 'ai-config.bin')
+const appIconPath = () => path.join(__dirname, '..', 'assets', 'app-icon.png')
 
 const initialData = {
   tasks: [],
@@ -78,6 +79,15 @@ function localDateKey(value = new Date()) {
   }).formatToParts(date)
   const part = (type) => parts.find(item => item.type === type)?.value || ''
   return `${part('year')}-${part('month')}-${part('day')}`
+}
+
+function localTime24(value = new Date()) {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Shanghai',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).format(value)
 }
 
 function extractJSON(text) {
@@ -179,7 +189,7 @@ function saveWindowState() {
 }
 
 function createTray() {
-  const icon = nativeImage.createEmpty()
+  const icon = nativeImage.createFromPath(appIconPath()).resize({ width: 16, height: 16 })
   tray = new Tray(icon)
   tray.setToolTip('D-Asst')
   const tasks = readData()?.tasks || []
@@ -204,10 +214,16 @@ function createWindow() {
     y: Number.isFinite(state.y) ? state.y : undefined,
     minWidth: 1080,
     minHeight: 700,
-    backgroundColor: '#faf9f6',
+    backgroundColor: '#f8f7f2',
+    icon: appIconPath(),
     title: 'D-Asst',
-    webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false }
+    webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, spellcheck: false }
   })
+  // 首屏完成后再初始化托盘与提醒，避免同步磁盘读取和原生图标处理争抢启动时间。
+  mainWindow.webContents.once('did-finish-load', () => setImmediate(() => {
+    if (!tray) createTray()
+    startReminderScheduler()
+  }))
   mainWindow.on('close', (event) => {
     if (closeBehavior === 'quit') return
     event.preventDefault()
@@ -223,6 +239,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setAppUserModelId('com.dasst.desktop')
   ipcMain.handle('ai:config:load', () => publicAIConfig(readAIConfig() || {}))
   ipcMain.handle('ai:config:save', (_event, input) => {
     const previous = readAIConfig() || {}
@@ -237,10 +254,11 @@ app.whenReady().then(() => {
   ipcMain.handle('ai:parse', async (_event, payload) => {
     const categories = Array.isArray(payload?.context?.categories) ? payload.context.categories : []
     const today = localDateKey()
+    const currentTime = localTime24()
     const tomorrowDate = new Date()
     tomorrowDate.setDate(tomorrowDate.getDate() + 1)
     const tomorrow = localDateKey(tomorrowDate)
-    const system = `你是 D-Asst 的任务规划助手。当前日期是 ${today}，明天是 ${tomorrow}，用户时区是 Asia/Shanghai。日期必须以本机当前日期为准，不能使用 UTC 日期。用户说“这两天”或“最近两天”时，默认只在今天和明天之间安排，即 ${today} 与 ${tomorrow}，不得安排到昨天。只返回严格 JSON，不要 Markdown，不要解释。Schema：{"summary":string,"eventDate":string|null,"tasks":[{"title":string,"description":string,"categoryId":string,"categoryName":string,"estimatedDuration":number|null,"planDate":string|null,"dueDate":string|null,"eventDate":string|null,"startTime":"HH:mm"|null,"reminderMinutes":number|null,"important":boolean,"urgent":boolean,"parentIndex":number|null,"dependencyIndexes":number[],"sourceType":"explicit"|"inferred"|"suggested"}]}. 任务必须是可执行动作；用户明确提到的事项标记 explicit，依据上下文推断标记 inferred，额外补充的步骤标记 suggested。日期必须使用 YYYY-MM-DD；未确定就 null。若用户明确说了某个事件的具体时间，将该日期放到 eventDate 和 planDate，并把时间写入 startTime。若用户要求“提前 X 分钟/小时提醒”，必须把 X 换算成 reminderMinutes 写入该任务；应用会直接创建系统提醒。绝对不要创建“设置提醒”“在手机日历中设置”之类的替代任务，也不要告诉用户自己去设置手机提醒。提醒针对事件本身，不是单独任务。没有明确时间就不要编造 startTime 或 reminderMinutes。不要为没有依据的任务编造时间。已有分类：${JSON.stringify(categories)}。请识别事件日期与准备任务的区别，并按预计工时和截止日期给出日期级建议。`
+    const system = `你是 D-Asst 的任务规划助手。当前北京时间是 ${today} ${currentTime}，明天是 ${tomorrow}，用户时区固定为 Asia/Shanghai。日期和时间必须以这里给出的北京时间为准，不能使用 UTC。所有时间一律使用 24 小时制 HH:mm，例如晚上十点必须写为 22:00，不能写 10:00。用户说“等下、待会、一会儿、稍后 + 小时”但没有说上午或晚上时，必须选择晚于当前北京时间的最近一次该时刻：例如当前 19:40 时“等下十点”表示今天 22:00；若当天候选时刻均已过去，则顺延至次日。用户说“这两天”或“最近两天”时，默认只在今天和明天之间安排，即 ${today} 与 ${tomorrow}，不得安排到昨天。只返回严格 JSON，不要 Markdown，不要解释。Schema：{"summary":string,"eventDate":string|null,"tasks":[{"title":string,"description":string,"categoryId":string,"categoryName":string,"estimatedDuration":number|null,"planDate":string|null,"dueDate":string|null,"eventDate":string|null,"startTime":"HH:mm"|null,"reminderMinutes":number|null,"important":boolean,"urgent":boolean,"parentIndex":number|null,"dependencyIndexes":number[],"sourceType":"explicit"|"inferred"|"suggested"}]}. 任务必须是可执行动作；用户明确提到的事项标记 explicit，依据上下文推断标记 inferred，额外补充的步骤标记 suggested。每一项任务都必须判断 important 和 urgent，不能省略：important 表示对核心目标、成绩、工作成果、健康或关键依赖有明显影响；urgent 表示有临近截止时间、必须尽快响应，或会阻塞近期任务。四种组合都允许，不能把所有任务一律标记为重要且紧急。日期必须使用 YYYY-MM-DD；未确定就 null。若用户明确说了某个事件的具体时间，将该日期放到 eventDate 和 planDate，并把 24 小时制时间写入 startTime。若用户要求“提前 X 分钟/小时提醒”，必须把 X 换算成 reminderMinutes 写入该任务；应用会直接创建系统提醒。绝对不要创建“设置提醒”“在手机日历中设置”之类的替代任务，也不要告诉用户自己去设置手机提醒。提醒针对事件本身，不是单独任务。没有明确时间就不要编造 startTime 或 reminderMinutes。不要为没有依据的任务编造时间。已有分类：${JSON.stringify(categories)}。请识别事件日期与准备任务的区别，并按预计工时、截止日期和四象限优先级给出日期级建议。`
     const raw = await callAI([{ role: 'system', content: system }, { role: 'user', content: String(payload?.text || '') }])
     return validateAIResult(extractJSON(raw))
   })
@@ -258,8 +276,6 @@ app.whenReady().then(() => {
     n.show()
   })
   createWindow()
-  createTray()
-  startReminderScheduler()
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); else showWindow() })
 })
 

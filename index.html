@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#faf9f6" />
     <title>D-Asst</title>
+    <style>
+      html, body, #root { width: 100%; min-height: 100%; margin: 0; }
+      body { background: #f8f7f2; color: #263027; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; }
+      .boot-static { min-height: 100vh; display: grid; place-items: center; align-content: center; gap: 14px; background: #f8f7f2; }
+      .boot-static__mark { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 17px; color: #fff; background: #465c47; box-shadow: 0 12px 28px rgba(70, 92, 71, .18); font-size: 28px; font-weight: 700; }
+      .boot-static__name { margin-top: 2px; font-size: 19px; font-weight: 650; letter-spacing: .02em; }
+      .boot-static__status { color: #899188; font-size: 12px; }
+      .boot-static__bar { width: 112px; height: 3px; overflow: hidden; border-radius: 999px; background: #e6e9e2; }
+      .boot-static__bar::after { content: ""; display: block; width: 42%; height: 100%; border-radius: inherit; background: #6f8a70; animation: boot-progress .8s ease-in-out infinite alternate; }
+      @keyframes boot-progress { from { transform: translateX(-10%); } to { transform: translateX(150%); } }
+      @media (prefers-reduced-motion: reduce) { .boot-static__bar::after { animation: none; width: 70%; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot-static" role="status" aria-label="正在打开 D-Asst"><div class="boot-static__mark">D</div><div class="boot-static__name">D-Asst</div><div class="boot-static__status">正在准备今天的计划…</div><div class="boot-static__bar"></div></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
