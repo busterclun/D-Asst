@@ -6,6 +6,8 @@ declare global {
   interface Window {
     dAsst?: {
       load: () => Promise<unknown>
+      getStartup: () => Promise<boolean | null>
+      setStartup: (enabled: boolean) => Promise<boolean>
       save: (data: unknown) => Promise<boolean>
       notify: (payload: { title: string; body: string }) => void
       setCloseBehavior: (value: string) => void

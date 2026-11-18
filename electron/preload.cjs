@@ -2,6 +2,8 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('dAsst', {
   load: () => ipcRenderer.invoke('data:load'),
+  getStartup: () => ipcRenderer.invoke('startup:get'),
+  setStartup: (enabled) => ipcRenderer.invoke('startup:set', enabled),
   save: (data) => ipcRenderer.invoke('data:save', data),
   notify: (payload) => ipcRenderer.send('notification:show', payload),
   setCloseBehavior: (value) => ipcRenderer.send('window:set-close-behavior', value),

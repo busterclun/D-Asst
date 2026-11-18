@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, Notification, nativeImage, safeStorage } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const { startupPreference } = require('./startup.cjs')
 
 let mainWindow
 let tray
@@ -240,6 +241,9 @@ function createWindow() {
 
 app.whenReady().then(() => {
   app.setAppUserModelId('com.dasst.desktop')
+  const startup = startupPreference(app, process)
+  ipcMain.handle('startup:get', () => startup.read())
+  ipcMain.handle('startup:set', (_event, enabled) => startup.set(enabled))
   ipcMain.handle('ai:config:load', () => publicAIConfig(readAIConfig() || {}))
   ipcMain.handle('ai:config:save', (_event, input) => {
     const previous = readAIConfig() || {}
